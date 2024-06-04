@@ -14,11 +14,11 @@ func NewRedisInstance(pool *redis.Pool) *RedisInstance {
 	return &RedisInstance{Pool: pool}
 }
 
-func (r *RedisInstance) Get(ctx context.Context, key string) (int64, error) {
+func (r *RedisInstance) Get(ctx context.Context, key string) (int, error) {
 	conn := r.Pool.Get()
 	defer conn.Close()
 
-	data, err := redis.Int64(conn.Do("GET", key))
+	data, err := redis.Int(conn.Do("GET", key))
 	if err != nil {
 		return 0, err
 	}
@@ -37,7 +37,7 @@ func (r *RedisInstance) Incr(ctx context.Context, key string) error {
 	return nil
 }
 
-func (r *RedisInstance) Expire(ctx context.Context, key string, ttlSecs int64) error {
+func (r *RedisInstance) Expire(ctx context.Context, key string, ttlSecs int) error {
 	conn := r.Pool.Get()
 	defer conn.Close()
 
