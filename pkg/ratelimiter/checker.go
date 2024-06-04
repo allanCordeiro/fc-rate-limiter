@@ -3,6 +3,7 @@ package checker
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -31,12 +32,12 @@ func NewRateLimiter() *RateLimiter {
 		},
 	}
 
-	ipLimit, err := strconv.Atoi(getEnvConfig("RATE_LIMITER_IP_LIMIT"))
+	ipLimit, err := strconv.Atoi(getEnvConfig("RATE_LIMITER_LIMIT"))
 	if err != nil {
 		ipLimit = 5 //assumes 5 by default
 	}
 
-	timeLimit, err := strconv.Atoi(getEnvConfig("RATE_LIMITER_BLOCK_TIME"))
+	timeLimit, err := strconv.Atoi(getEnvConfig("RATE_LIMITER_IP_BLOCK_TIME"))
 	if err != nil {
 		timeLimit = 60 //assumes 60 seconds by default
 	}
@@ -51,6 +52,15 @@ func NewRateLimiter() *RateLimiter {
 func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parameter := r.Header.Get("API_KEY")
+		if parameter != "" {
+			customLimit, err := GetTokenExpirationParam(parameter)
+			if err != nil {
+				log.Println(err)
+			}
+			if customLimit != 0 {
+				rl.timeLimit = customLimit
+			}
+		}
 		if parameter == "" {
 			parameter = r.RemoteAddr
 		}
