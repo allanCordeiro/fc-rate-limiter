@@ -53,7 +53,7 @@ func (rl *RateLimiter) Middleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		parameter := r.Header.Get("API_KEY")
 		if parameter != "" {
-			customLimit, err := GetTokenExpirationParam(parameter)
+			customLimit, err := GetTokenExpirationParam("./tokens.json", parameter)
 			if err != nil {
 				log.Println(err)
 			}
@@ -92,7 +92,6 @@ func (rl *RateLimiter) HasLimitExceeded(key string, limit int) (bool, error) {
 	if err == redis.ErrNil || count == 00 {
 		errExpire := cache.Expire(ctx, cacheKey, rl.timeLimit)
 		if errExpire != nil {
-			fmt.Println("aqui")
 			return false, errExpire
 		}
 	}
@@ -105,7 +104,7 @@ func getEnvConfig(config string) string {
 	if envVar == "" {
 		err := gotenv.Load(".env")
 		if err != nil {
-			panic(".env file not found.")
+			panic(fmt.Sprintf("environment variable %s was not found.", config))
 		}
 		envVar = os.Getenv(config)
 	}

@@ -11,9 +11,9 @@ type Token struct {
 	ExpiresIn int    `json:"expiresIn"`
 }
 
-func GetTokenExpirationParam(tokenKey string) (int, error) {
+func GetTokenExpirationParam(tokenPath string, tokenKey string) (int, error) {
 	var tokenList []Token
-	data, err := getFileData()
+	data, err := getFileData(tokenPath)
 	if err != nil {
 		return 0, err
 	}
@@ -42,8 +42,8 @@ func getByKey(key string, token []Token) *Token {
 	return &Token{}
 }
 
-func getFileData() ([]byte, error) {
-	file, err := os.Open("tokens.json")
+func getFileData(tokenPath string) ([]byte, error) {
+	file, err := os.Open(tokenPath)
 	if err != nil {
 		return nil, err
 	}
