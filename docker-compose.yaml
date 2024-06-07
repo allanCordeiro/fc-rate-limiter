@@ -1,4 +1,15 @@
 services:
+  app:
+    image: allancordeiros/rate-limiter-sample:latest
+    ports: 
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RATE_LIMITER_LIMIT=5
+      - RATE_LIMITER_IP_BLOCK_TIME=60
   redis:
     image: redis
     container_name: redis
