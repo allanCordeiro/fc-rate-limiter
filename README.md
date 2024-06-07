@@ -42,3 +42,13 @@ O servidor HTTP de exemplo, assim como Redis, irão subir. O http deverá estar 
 Os testes automatizados podem ser executados com o seguinte comando:
 
 `make test`
+
+## Redis
+
+O uso do redis foi parte do requisito do projeto. A configuração do mesmo se encontra nas variáveis de ambiente:
+
+`REDIS_HOST`
+
+`REDIS_PORT`
+
+Para implementação outro serviço de cache, basta criar uma implementação dentro do pacote ratelimiter, em cache, que atenda sua interface. Após gerar a implementação, realizar os ajustes no código cliente.S
